@@ -1,0 +1,17 @@
+{
+  "model_name": "hist_gbdt",
+  "features": [
+    "BMI",
+    "Age",
+    "GenHlth",
+    "HighBP",
+    "HighChol",
+    "PhysActivity"
+  ],
+  "metrics": {
+    "roc_auc": 0.8153653946493518,
+    "avg_precision": 0.44757224008531143,
+    "f1": 0.26113163523235466,
+    "accuracy": 0.8502049826553137
+  }
+}

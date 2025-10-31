@@ -1,0 +1,2 @@
+HighBP,HighChol,CholCheck,BMI,Smoker,Stroke,HeartDiseaseorAttack,PhysActivity,Fruits,Veggies,HvyAlcoholConsump,AnyHealthcare,NoDocbcCost,GenHlth,MentHlth,PhysHlth,DiffWalk,Sex,Age,Education,Income,diabetes_risk_proba
+1,1,1,31,0,0,0,1,1,1,0,1,0,3,2,3,0,0,8,5,5,0.3115758818811303

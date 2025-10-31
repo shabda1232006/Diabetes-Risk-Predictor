@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Diabetes Risk Predictor</title>
+	<style>
+		:root {
+			--bg: #0f172a;
+			--panel: #111827;
+			--muted: #9ca3af;
+			--text: #e5e7eb;
+			--primary: #4f46e5;
+			--primary-600: #4338ca;
+			--ring: rgba(79, 70, 229, 0.45);
+			--ok: #10b981;
+			--warn: #f59e0b;
+			--danger: #ef4444;
+		}
+
+		* { box-sizing: border-box; }
+		body { margin: 0; background: linear-gradient(180deg, #0b1022, #0f172a); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+
+		.container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+		.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+		.title { font-size: 28px; font-weight: 800; letter-spacing: 0.2px; }
+		.subtitle { color: var(--muted); margin-top: 6px; max-width: 70ch; }
+
+		.card { background: linear-gradient(180deg, #0f172a, #0b1226); border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
+		.grid { display: grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap: 16px; }
+		@media (max-width: 980px) { .grid { grid-template-columns: repeat(2, minmax(200px, 1fr)); } }
+		@media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
+		.field { display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px; }
+		.label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+		label { font-weight: 700; font-size: 14px; }
+		.help { font-size: 12px; color: var(--muted); line-height: 1.35; }
+		select, input[type="number"] { background: #0b1226; color: var(--text); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 12px; outline: none; transition: box-shadow 120ms ease, border-color 120ms ease; }
+		select:focus, input[type="number"]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--ring); }
+
+		.actions { margin-top: 18px; display: flex; gap: 12px; align-items: center; }
+		button { background: var(--primary); color: white; border: none; border-radius: 12px; padding: 12px 18px; font-weight: 700; letter-spacing: 0.3px; cursor: pointer; transition: transform 120ms ease, background 120ms ease, box-shadow 120ms ease; box-shadow: 0 10px 24px rgba(79, 70, 229, 0.25); }
+		button:hover { background: var(--primary-600); transform: translateY(-1px); }
+		button:active { transform: translateY(0); }
+
+		.result { margin-top: 18px; }
+		.kpi { background: linear-gradient(180deg, rgba(16,185,129,0.08), rgba(16,185,129,0.02)); border: 1px solid rgba(16,185,129,0.25); color: #d1fae5; border-radius: 14px; padding: 14px; font-weight: 800; font-size: 18px; }
+		.kpi.warn { background: linear-gradient(180deg, rgba(245,158,11,0.10), rgba(245,158,11,0.03)); border-color: rgba(245,158,11,0.35); color: #fde68a; }
+		.kpi.danger { background: linear-gradient(180deg, rgba(239,68,68,0.10), rgba(239,68,68,0.03)); border-color: rgba(239,68,68,0.35); color: #fecaca; }
+
+		.footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="header">
+			<div>
+				<div class="title">Diabetes Risk Predictor</div>
+				
+			</div>
+		</div>
+
+		<form id="predict-form" class="card" autocomplete="on">
+			<div class="grid">
+				<div class="field">
+					<div class="label"><label for="BMI">BMI</label></div>
+					<input id="BMI" type="number" name="BMI" step="0.1" min="8" max="80" value="27" />
+					<div class="help">Body Mass Index. Roughly weight adjusted for height. Typical adult range: 18.5–40.</div>
+				</div>
+
+				<div class="field">
+					<div class="label"><label for="Age">Age (1..13)</label></div>
+					<select id="Age" name="Age">
+						<option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option selected>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option>
+					</select>
+					<div class="help">Age group (BRFSS bands): 1=18–24, 2=25–29, 3=30–34, 4=35–39, 5=40–44, 6=45–49, 7=50–54, 8=55–59, 9=60–64, 10=65–69, 11=70–74, 12=75–79, 13=80+.</div>
+				</div>
+
+				<div class="field">
+					<div class="label"><label for="GenHlth">General Health (1..5)</label></div>
+					<select id="GenHlth" name="GenHlth">
+						<option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option>
+					</select>
+					<div class="help">Self-reported overall health: 1=Excellent, 2=Very Good, 3=Good, 4=Fair, 5=Poor.</div>
+				</div>
+
+				<div class="field">
+					<div class="label"><label for="HighBP">High Blood Pressure</label></div>
+					<select id="HighBP" name="HighBP">
+						<option value="0">No</option><option value="1">Yes</option>
+					</select>
+					<div class="help">Have you ever been told you have high blood pressure? 0=No, 1=Yes.</div>
+				</div>
+
+				<div class="field">
+					<div class="label"><label for="HighChol">High Cholesterol</label></div>
+					<select id="HighChol" name="HighChol">
+						<option value="0">No</option><option value="1">Yes</option>
+					</select>
+					<div class="help">Have you ever been told your cholesterol is high? 0=No, 1=Yes.</div>
+				</div>
+
+				<div class="field">
+					<div class="label"><label for="PhysActivity">Physical Activity</label></div>
+					<select id="PhysActivity" name="PhysActivity">
+						<option value="0">No</option><option value="1">Yes</option>
+					</select>
+					<div class="help">Any physical activity in the past 30 days (not including job)? 0=No, 1=Yes.</div>
+				</div>
+			</div>
+
+			<div class="actions">
+				<button type="submit">Predict</button>
+				<div id="result" class="result"></div>
+			</div>
+		</form>
+
+		
+	</div>
+
+	<script>
+		const form = document.getElementById('predict-form');
+		const resultEl = document.getElementById('result');
+		function renderKpi(prob) {
+			const pct = (prob * 100);
+			let cls = 'kpi';
+			if (pct >= 30 && pct < 60) cls += ' warn';
+			if (pct >= 60) cls += ' danger';
+			return `<div class="${cls}">Estimated diabetes risk: ${pct.toFixed(1)}%</div>`;
+		}
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const formData = new FormData(form);
+			const payload = {};
+			for (const [k, v] of formData.entries()) {
+				payload[k] = Number(v);
+			}
+			resultEl.innerHTML = renderKpi(0);
+			try {
+				const res = await fetch('/predict', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(payload)
+				});
+				if (!res.ok) {
+					const err = await res.json();
+					throw new Error(err.detail || 'Request failed');
+				}
+				const data = await res.json();
+				resultEl.innerHTML = renderKpi(Number(data.probability));
+			} catch (err) {
+				resultEl.innerHTML = `<div class="kpi danger">Error: ${err.message}</div>`;
+			}
+		});
+	</script>
+</body>
+</html>
+
